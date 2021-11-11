@@ -3,7 +3,7 @@ import { PluginManager } from "../node_modules/live-plugin-manager/dist/index";
 import { GitHubIO, ThemeIO } from "./srcIO";
 import upath from "upath";
 
-let GitHubAccessToken: string | undefined;
+let GitHubAccessToken: string | null;
 
 // テーマの検索
 // DONE: keywords:vivliostyle-themeで一覧取得
@@ -207,7 +207,7 @@ export default class ThemeManager {
    * コンストラクタ
    * @param token GitHubAccessToken
    */
-  public constructor(token?: string) {
+  public constructor(token: string|null = null) {
     GitHubAccessToken = token;
   }
 

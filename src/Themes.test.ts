@@ -145,7 +145,7 @@ test('search themes by topic', async () => {
     // 複数の結果が得られるケース
     const keyword2 = 'Report';
     const result2 = themes.filter((theme) => {
-        console.log(theme.name,theme.topics);
+        // console.log(theme.name,theme.topics);
         return theme.topics.includes(keyword2);
     })
     // TODO: nameでソートしたほうが良いかも
@@ -162,9 +162,9 @@ test('search themes by topic', async () => {
         }).length;
         return num > 0;
     })
-    expect(result3.length).toBe(2);
+    expect(result3.length).toBe(1);
     expect(result3[0].name).toBe('@vivliostyle/theme-techbook');
-    expect(result3[1].name).toBe('vivliostyle-theme-dnd-5e-phb');
+//    expect(result3[1].name).toBe('vivliostyle-theme-dnd-5e-phb');
 })
 
 // テーマ名を指定してNPMから取得
