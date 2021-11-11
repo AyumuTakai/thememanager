@@ -1,5 +1,5 @@
 {
-  "name": "themes",
+  "name": "theme-manager",
   "version": "1.0.0",
   "description": "vivliostyle themes handling library",
   "main": "index.js",
