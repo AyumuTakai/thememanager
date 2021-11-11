@@ -41,7 +41,7 @@ let GitHubAccessToken: string | null;
 
 // MEMO: テーマには形式(Package,CSSファイル)と保存場所(GitHub, NPM repository, ローカルファイル, ApplicationCache)の組合せが存在する
 
-interface Theme {
+export interface Theme {
   name: string;
   category: string;
   topics: string[];

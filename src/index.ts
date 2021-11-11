@@ -1,4 +1,4 @@
-import ThemeManager,{PackageTheme} from "./ThemeManager";
-export * from "./srcIO";
+import ThemeManager,{PackageTheme,Theme,SingleFileTheme} from "./ThemeManager";
+import {ThemeIO,GitHubIO} from "./srcIO";
 
-export {ThemeManager,PackageTheme};
+export {ThemeManager,PackageTheme,Theme,SingleFileTheme,ThemeIO,GitHubIO};
