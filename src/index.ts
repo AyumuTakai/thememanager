@@ -1,4 +1,4 @@
-import ThemeManager from "./ThemeManager";
+import ThemeManager,{PackageTheme} from "./ThemeManager";
 export * from "./srcIO";
 
-export {ThemeManager};
+export {ThemeManager,PackageTheme};
