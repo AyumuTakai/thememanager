@@ -82,7 +82,6 @@ export class SingleFileTheme implements Theme {
     // TODO: コメントから取得
     this.category = "";
   }
-
 }
 
 /**
@@ -123,19 +122,24 @@ export class PackageTheme implements Theme {
     }
     // GitHubにアクセスするためのIOクラス
     const path = GitHubIO.parseURL(repository.url);
-    const io = new GitHubIO(path.owner,path.repo,GitHubAccessToken);
+    const io = new GitHubIO(path.owner, path.repo, GitHubAccessToken);
 
     const filenames = await io.findAll();
-    const pkgJson = await PackageTheme.getPackageJson(repository.directory, io) as unknown as {
+    const pkgJson = (await PackageTheme.getPackageJson(
+      repository.directory,
+      io
+    )) as unknown as {
       name: string;
       description: string;
       version: string;
       author: string;
-      vivliostyle: { theme: {
-        category?: string,
-        topics?: string[],
-        style?: string
-      } };
+      vivliostyle: {
+        theme: {
+          category?: string;
+          topics?: string[];
+          style?: string;
+        };
+      };
     };
     const theme = new PackageTheme();
     // console.log(pkgJson);
@@ -146,17 +150,19 @@ export class PackageTheme implements Theme {
     if (pkgJson.vivliostyle) {
       if (pkgJson.vivliostyle.theme) {
         const t = pkgJson.vivliostyle.theme;
-        theme.category = t.category ?? '';
+        theme.category = t.category ?? "";
         theme.topics = t.topics ?? [];
-        theme.style = upath.normalize(t.style ?? '');
+        theme.style = upath.normalize(t.style ?? "");
       }
     }
-    if(theme.style) {
-      try{
-        const data = await io.get(upath.join(repository.directory,theme.style));
+    if (theme.style) {
+      try {
+        const data = await io.get(
+          upath.join(repository.directory, theme.style)
+        );
         theme.files[theme.style] = data;
-      }catch(error){
-        throw new Error('style file access error');
+      } catch (error) {
+        throw new Error("style file access error");
       }
     }
     return theme;
@@ -187,7 +193,7 @@ export class PackageTheme implements Theme {
   ): Promise<object | null> {
     const path = `${repo_directory ?? ""}/package.json`;
     try {
-      const pkg_json = await io.get(path,true);
+      const pkg_json = await io.get(path, true);
       return pkg_json;
     } catch (error) {
       console.error(error, "file read error:", path);
@@ -200,14 +206,14 @@ export class PackageTheme implements Theme {
  *
  */
 export default class ThemeManager {
-  themes: PackageTheme[] = [];
+  themes: Theme[] = [];
   serchQuery: string = "keywords:vivliostyle-theme";
 
   /**
    * コンストラクタ
    * @param token GitHubAccessToken
    */
-  public constructor(token: string|null = null) {
+  public constructor(token: string | null = null) {
     GitHubAccessToken = token;
   }
 
@@ -218,24 +224,30 @@ export default class ThemeManager {
    * @returns
    */
   public async searchFromNpm(query: string = this.serchQuery, max = 100) {
-    const results = await NpmApi.SearchPackage(query, max);
-    // console.log(results);
-    const promises: Promise<PackageTheme | null>[] = results.map(
-      async (result: any) => {
-        try {
-          const theme = await PackageTheme.fromNpm(result.package.name);
-          return theme;     
-        } catch (error) {
-          return null;
-        }
+    try {
+      const results = await NpmApi.SearchPackage(query, max);
+      // console.log(results);
+      if (!results) {
+        return [] as Theme[];
       }
-    );
-    const themes = (await Promise.all(promises)).filter(
-      (v) => v
-    ) as PackageTheme[]; // nullを除去
-    this.themes = themes;
+      const promises: Promise<PackageTheme | null>[] = results.map(
+        async (result: any) => {
+          try {
+            const theme = await PackageTheme.fromNpm(result.package.name);
+            return theme;
+          } catch (error) {
+            return null;
+          }
+        }
+      );
+      const themes = (await Promise.all(promises)).filter((v) => v) as Theme[]; // nullを除去
+      this.themes = themes;
 
-    return this.themes;
+      return this.themes;
+    } catch (error) {
+      console.error(error);
+      return [] as Theme[];
+    }
   }
 
   public async getPackageFromNpm(themeName: string): Promise<Theme> {
